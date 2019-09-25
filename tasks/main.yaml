@@ -1,0 +1,41 @@
+---
+
+- name: Test distribution
+  assert:
+    that: >
+      ansible_facts.os_family == "Debian" or
+      ansible_facts.os_family == "RedHat"
+  tags:
+    - chrony_assert
+
+- name: Install Chrony
+  package:
+    name: "{{ chrony_pkg }}"
+  notify:
+    - Restart Chrony service
+  tags:
+    - chrony_pkg
+
+- name: Configure Chrony
+  template:
+    src: chrony.conf.j2
+    dest: "{{ chrony_conf_file }}"
+  notify:
+    - Restart Chrony service
+  tags:
+    - chrony_config
+
+- name: Enable Chrony service
+  service:
+    name: "{{ chrony_service }}"
+    enabled: yes
+  tags:
+    - chrony_service
+
+- name: Start Chrony service
+  service:
+    name: "{{ chrony_service }}"
+    state: started
+  register: chrony_service_started
+  tags:
+    - chrony_service

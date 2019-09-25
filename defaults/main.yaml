@@ -1,0 +1,49 @@
+---
+
+# Package to be installed (you can force a specific version here)
+chrony_pkg: chrony
+
+# Default service name
+chrony_service: chronyd
+
+# Default location of the chrony.conf file
+chrony_conf_file: /etc/chrony.conf
+
+
+# Common options for the server list bellow
+chrony_config_server_options: iburst
+
+# Default list of NTP servers
+chrony_config_server:
+  - 0.centos.pool.ntp.org
+  - 1.centos.pool.ntp.org
+  - 2.centos.pool.ntp.org
+  - 3.centos.pool.ntp.org
+
+# Default drift file location
+chrony_config_driftfile: /var/lib/chrony/drift
+
+# Default make step
+chrony_config_makestep: 1.0 3
+
+# Default rtcsync
+chrony_config_rtcsync: "\n#"
+
+# Default location of the log directory
+chrony_config_logdir: /var/log/chrony
+
+# Default configuration
+chrony_config_default:
+  server: "{{ chrony_config_server | map('regex_replace', '^(.*)$', '\\1 ' ~ chrony_config_server_options) | list }}"
+  driftfile: "{{ chrony_config_driftfile }}"
+  makestep: "{{ chrony_config_makestep }}"
+  rtcsync: "{{ chrony_config_rtcsync }}"
+  logdir: "{{ chrony_config_logdir }}"
+
+# Custom configuration
+chrony_config_custom: {}
+
+# Final configuration
+chrony_config: "{{
+  chrony_config_default | combine(
+  chrony_config_custom) }}"

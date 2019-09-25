@@ -1,0 +1,3 @@
+{{ ansible_managed | comment }}
+
+{{ chrony_config | encode_ini(delimiter=" ") }}
